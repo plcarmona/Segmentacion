@@ -33,7 +33,8 @@ def getpaths(mode):
         IMAGE_PATH="../../shared_data/CUANTIFICACION/dataset/surcos/images/"
         MASK_PATH="../../shared_data/CUANTIFICACION/dataset/surcos/masks/"
     return IMAGE_PATH, MASK_PATH
-def create_df():
+def create_df(mode):
+    IMAGE_PATH, MASK_PATH = getpaths(mode)
     name = []
     for dirname, _, filenames in os.walk(IMAGE_PATH):
         for filename in filenames:
