@@ -8,7 +8,7 @@ import torch
 import albumentations as A
 import time
 import torch.nn.functional as F
-
+from tqdm.notebook import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 N_CLASSES = 7
