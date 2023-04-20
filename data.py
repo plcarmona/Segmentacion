@@ -65,6 +65,7 @@ class OperationDataset(Dataset):
             std=[image[0].std(),image[1].std(),image[2].std()]
             t = T.Compose([T.ToTensor(),T.Normalize(mean,std)])
             image = t(image).numpy()
+            image = np.moveaxis(image, 0, -1)
             aug = self.transform(image=image, mask=mask)
             image = aug['image']
             mask = aug['mask']
