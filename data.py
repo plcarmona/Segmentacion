@@ -12,6 +12,9 @@ import tqdm
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+N_CLASSES = 7
+IN_CHANNELS = [0,1,2]
+model_name = "unet"
 
 def getpaths(mode):
     if mode == "baches":
