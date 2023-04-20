@@ -8,7 +8,6 @@ import torch
 import albumentations as A
 import time
 import torch.nn.functional as F
-import tqdm
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
