@@ -13,7 +13,7 @@ from tqdm.notebook import tqdm
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 N_CLASSES = 7
 IN_CHANNELS = [0,1,2]
-model_name = "unet"
+model_name = "modelname"
 
 def getpaths(mode):
     if mode == "baches":
@@ -160,7 +160,6 @@ def RDS(mask):
                 R += ok.count_nonzero().item()*i.item()/mask.count_nonzero().item()
         return R, Freq, R*Freq
         
-
 def intersectionAndUnionGPU(output, target, K, ignore_index=255):
     # 'K' classes, output and target sizes are N or N * L or N * H * W, each value in range 0 to K - 1.
     
@@ -196,6 +195,7 @@ def intersectionAndUnionGPU(output, target, K, ignore_index=255):
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
+
 def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler, patch=False):
     torch.cuda.empty_cache()
     train_losses = []
