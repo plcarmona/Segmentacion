@@ -4,6 +4,7 @@ import os
 from torch.utils.data import Dataset
 import albumentations as A
 from torchvision import transforms as T
+import segmentation_models_pytorch as smp
 import torch
 import albumentations as A
 import time
@@ -309,3 +310,30 @@ t_train = A.Compose([A.HorizontalFlip(), A.VerticalFlip(), A.RandomRotate90(), A
                      A.GridDistortion(p=0.2), A.RandomBrightnessContrast((0,0.5),(0,0.5)), A.GaussNoise()])
 
 t_val = A.Compose([A.HorizontalFlip(), A.VerticalFlip(), A.RandomRotate90()])
+    def getCriterion(CRITERION):
+        if CRITERION == 'CEL':
+            criterion = nn.CrossEntropyLoss(ignore_index=0)
+        elif CRITERION == 'DL':
+            criterion = smp.losses.DiceLoss(mode='multiclass', ignore_index=0)
+        #elif CRITERION == 'CEL+DL':  #definir bien
+        #    criterion = smp.losses.JacardLoss('multiclass')
+        #elif CRITERION == 'JC':
+        #    criterion = smp.losses.JaccardLoss(mode='multiclass')  #RuntimeError: one_hot is only applicable to index tensor.
+        elif CRITERION == 'LV':
+            criterion = smp.losses.LovaszLoss(mode='multiclass', ignore_index=0)
+        elif CRITERION == 'Focal':
+            criterion = smp.losses.FocalLoss(mode='multiclass', ignore_index=0)
+        elif CRITERION == 'Tversky':
+            criterion = smp.losses.TverskyLoss(mode='multiclass',alpha=0.5,beta=0.5, ignore_index=0) 
+        return criterion
+    def getModel(model, ENCODER_NAME=ENCODER_NAME, ENCODER_WEIGHTS=ENCODER_WEIGHTS, N_CLASSES=N_CLASSES):
+        if model == 'unet':
+            return smp.Unet(encoder_name = ENCODER_NAME, encoder_weights = ENCODER_WEIGHTS, in_channels = CHANS, classes = N_CLASSES, activation = None)
+        elif model == 'fpn':
+            return smp.FPN(encoder_name = ENCODER_NAME, encoder_weights = ENCODER_WEIGHTS, in_channels = CHANS, classes = N_CLASSES, activation = None)
+        elif model == 'linknet':
+            return smp.Linknet(encoder_name = ENCODER_NAME, encoder_weights = ENCODER_WEIGHTS, in_channels = CHANS, classes = N_CLASSES, activation = None)
+        elif model == 'unet++':
+            return smp.UnetPlusPlus(encoder_name = ENCODER_NAME, encoder_weights = None, in_channels = CHANS, classes = N_CLASSES, activation = None)
+        else:
+            raise ValueError('model name is not correct')
