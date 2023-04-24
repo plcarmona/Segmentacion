@@ -359,6 +359,7 @@ def getShed(arg):
         sched = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.0001, max_lr=0.001, step_size_up=5, mode='triangular2')
     elif arg == 'OneCycle':
         sched = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.001, steps_per_epoch=len(train_loader), epochs=10)
+    return sched
 
 
 
