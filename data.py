@@ -304,8 +304,8 @@ def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler
                   "Train Acc:{:.3f}..".format(accuracy/len(train_loader)),
                   "Val Acc:{:.3f}..".format(test_accuracy/len(val_loader)),
                   "Time: {:.2f}m".format((time.time()-since)/60))
-        
-    torch.save(model, model_name + 'mIoU-{:.3f}.pt'.format(val_iou_score/len(val_loader)))    
+    if val_iou_score/len(val_loader) > 0.5:
+        torch.save(model, model_name + 'mIoU-{:.3f}.pt'.format(val_iou_score/len(val_loader)))    
     
     history = {'train_loss' : train_losses, 'val_loss': test_losses,
                'train_miou' :train_iou, 'val_miou':val_iou,
@@ -352,14 +352,6 @@ def getModel(model, ENCODER_NAME=ENCODER_NAME, ENCODER_WEIGHTS=ENCODER_WEIGHTS, 
     else:
         raise ValueError('model name is not correct')
 
-def getShed(arg):
-    if arg == 'Steplr':
-        sched= torch.optim.lr_scheduler.StepLR(optimizer, LR, step_size=5, gamma=0.1)
-    elif arg == 'Cycliclr':
-        sched = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.0001, max_lr=0.001, step_size_up=5, mode='triangular2')
-    elif arg == 'OneCycle':
-        sched = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.001, steps_per_epoch=len(train_loader), epochs=10)
-    return sched
 
 
 
