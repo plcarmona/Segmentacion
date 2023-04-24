@@ -322,6 +322,7 @@ t_val = A.Compose([A.HorizontalFlip(), A.VerticalFlip(), A.RandomRotate90()])
 ENCODER_NAME = 'resnet18'#'timm-regnetx_002'#trial.suggest_categorical('encoder',['resnet50','resnet18','timm-efficientnet-b1'])#'mobilenet_v2'  # 'mobilenet_v2', 'resnet50', 'resnet34'
 ENCODER_WEIGHTS = 'imagenet'  # None, 'imagenet', 'ssl', 'swsl'
 CHANS=3
+
 def getCriterion(CRITERION):
     if CRITERION == 'CEL':
         criterion = nn.CrossEntropyLoss(ignore_index=0)
@@ -338,6 +339,7 @@ def getCriterion(CRITERION):
     elif CRITERION == 'Tversky':
         criterion = smp.losses.TverskyLoss(mode='multiclass',alpha=0.5,beta=0.5, ignore_index=0) 
     return criterion
+
 def getModel(model, ENCODER_NAME=ENCODER_NAME, ENCODER_WEIGHTS=ENCODER_WEIGHTS, N_CLASSES=N_CLASSES):
     if model == 'unet':
         return smp.Unet(encoder_name = ENCODER_NAME, encoder_weights = ENCODER_WEIGHTS, in_channels = CHANS, classes = N_CLASSES, activation = None)
@@ -349,6 +351,16 @@ def getModel(model, ENCODER_NAME=ENCODER_NAME, ENCODER_WEIGHTS=ENCODER_WEIGHTS, 
         return smp.UnetPlusPlus(encoder_name = ENCODER_NAME, encoder_weights = None, in_channels = CHANS, classes = N_CLASSES, activation = None)
     else:
         raise ValueError('model name is not correct')
+
+def getShed(arg):
+    if arg == 'Steplr':
+        sched= torch.optim.lr_scheduler.StepLR(optimizer, LR, step_size=5, gamma=0.1)
+    elif arg == 'Cycliclr':
+        sched = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.0001, max_lr=0.001, step_size_up=5, mode='triangular2')
+    elif arg == 'OneCycle':
+        sched = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.001, steps_per_epoch=len(train_loader), epochs=10)
+
+
 
 def focal_loss_with_logits(
     output: torch.Tensor,
