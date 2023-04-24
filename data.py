@@ -66,6 +66,7 @@ class OperationDataset(Dataset):
         #print(image.shape)
         #print(mask.shape)
 
+
         
         if self.transform is not None:
             #mean=[image[0].mean(),image[1].mean(),image[2].mean()]
@@ -203,7 +204,7 @@ def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
-def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler, patch=False):
+def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler, modelname, patch=False):
     torch.cuda.empty_cache()
     train_losses = []
     test_losses = []
@@ -212,6 +213,7 @@ def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler
     lrs = []
     min_loss = np.inf
     decrease = 1 ; not_improve=0
+    model_name = modelname
 
     model.to(device)
     fit_time = time.time()
