@@ -166,7 +166,7 @@ def RDS(mask):
             if i >= 2:
                 ok = mask == i
                 R += ok.count_nonzero().item()*i.item()/mask.count_nonzero().item()
-        return R, Freq, R*Freq
+        return R*Freq
         
 def intersectionAndUnionGPU(output, target, K, ignore_index=255):
     # 'K' classes, output and target sizes are N or N * L or N * H * W, each value in range 0 to K - 1.
