@@ -167,7 +167,19 @@ def RDS(mask):
                 ok = mask == i
                 R += ok.count_nonzero().item()*i.item()/mask.count_nonzero().item()
         return R*Freq
-        
+def iter_mask(mode,trsh=0.1):
+    IMG,MASK=getpaths(mode)
+    files=os.listdir(MASK)
+    r=[]
+    for file in files:
+        x=np.load(os.path.join(MASK,file))['arr_0']
+        x=torch.from_numpy(x)
+        x=RDS(x)[2]
+        if x>trsh:
+            r.append(file)
+    return r
+
+    
 def intersectionAndUnionGPU(output, target, K, ignore_index=255):
     # 'K' classes, output and target sizes are N or N * L or N * H * W, each value in range 0 to K - 1.
     
