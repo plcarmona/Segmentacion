@@ -21,8 +21,10 @@ from segmentation_models_pytorch.losses.constants import BINARY_MODE, MULTICLASS
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 N_CLASSES = 7
-IN_CHANNELS = [0,1,2]
-model_name = "modelname"
+IN_CHANNELS = [0,1,2,3]
+ENCODER_NAME = 'resnet18'#'timm-regnetx_002'#trial.suggest_categorical('encoder',['resnet50','resnet18','timm-efficientnet-b1'])#'mobilenet_v2'  # 'mobilenet_v2', 'resnet50', 'resnet34'
+ENCODER_WEIGHTS = 'imagenet'  # None, 'imagenet', 'ssl', 'swsl'
+CHANS=len(IN_CHANNELS)
 
 def getpaths(mode):
     if mode == "baches":
@@ -237,7 +239,7 @@ def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler
     lrs = []
     min_loss = np.inf
     decrease = 1 ; not_improve=0
-    model_name = modelname
+    model_name = str(CHANS)+' '+modelname
 
     model.to(device)
     fit_time = time.time()
@@ -344,9 +346,6 @@ t_train = A.Compose([A.HorizontalFlip(), A.VerticalFlip(), A.RandomRotate90(), A
 
 t_val = A.Compose([A.HorizontalFlip(), A.VerticalFlip(), A.RandomRotate90()])
 
-ENCODER_NAME = 'resnet18'#'timm-regnetx_002'#trial.suggest_categorical('encoder',['resnet50','resnet18','timm-efficientnet-b1'])#'mobilenet_v2'  # 'mobilenet_v2', 'resnet50', 'resnet34'
-ENCODER_WEIGHTS = 'imagenet'  # None, 'imagenet', 'ssl', 'swsl'
-CHANS=len(IN_CHANNELS)
 
 def getModel(model, ENCODER_NAME=ENCODER_NAME, ENCODER_WEIGHTS=ENCODER_WEIGHTS, N_CLASSES=N_CLASSES):
     if model == 'unet':
