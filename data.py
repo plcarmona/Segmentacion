@@ -177,9 +177,18 @@ def iter_mask(mode,trsh=0.1):
         x=RDS(x)[2]
         if x>trsh:
             r.append(file)
-    return r
+    return pd.DataFrame(r)
 
-    
+def get_randomimg(mode,n,seed=0):
+    img,mask=getpaths(mode)
+    x=os.listdir(img)
+    #Select n random images from x
+    np.random.seed(seed)
+    x=np.random.choice(x,n)
+    x=pd.DataFrame(x,columns=["id"])
+    x['id']=x['id'].str.replace(".npz","")
+    return x
+
 def intersectionAndUnionGPU(output, target, K, ignore_index=255):
     # 'K' classes, output and target sizes are N or N * L or N * H * W, each value in range 0 to K - 1.
     
@@ -292,7 +301,7 @@ def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler
                 min_loss = (test_loss/len(val_loader))
                 decrease += 1
                 print('saving model...')
-                torch.save(model, model_name + 'mIoU-{:.3f}.pt'.format(val_iou_score/len(val_loader)))
+                #torch.save(model, model_name + 'mIoU-{:.3f}.pt'.format(val_iou_score/len(val_loader)))
                     
 
             if (test_loss/len(val_loader)) > min_loss:
@@ -317,7 +326,7 @@ def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler
                   "Val Acc:{:.3f}..".format(test_accuracy/len(val_loader)),
                   "Time: {:.2f}m".format((time.time()-since)/60))
             
-    if val_iou_score/len(val_loader) > 0.4:
+    if val_iou_score/len(val_loader) > 0.3:
         torch.save(model, model_name + 'mIoU-{:.3f}.pt'.format(val_iou_score/len(val_loader)))    
     
     history = {'train_loss' : train_losses, 'val_loss': test_losses,
@@ -478,7 +487,7 @@ class FocalLoss(_Loss):
                 aux = cls_y_true != cls_y_pred
                 cls_y_pred = cls_y_pred[aux]
                 cls_y_pred = cls_y_true[aux]                
-                loss += self.focal_loss_fn(cls_y_pred, cls_y_true)*(cls_y_true-cls_y_pred).abs()
+                loss += self.focal_loss_fn(cls_y_pred, cls_y_true)#*(cls_y_true-cls_y_pred).abs()
 
         return loss
 def getCriterion(CRITERION):
