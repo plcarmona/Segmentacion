@@ -463,5 +463,5 @@ def getCriterion(CRITERION):
     elif CRITERION == 'Tversky':
         criterion = smp.losses.TverskyLoss(mode='multiclass',alpha=0.5,beta=0.5, ignore_index=0)
     elif CRITERION == 'Custom':
-        criterion = FocalLoss(ignore_index=0)
+        criterion = FocalLoss(mode='multiclass',ignore_index=0)
     return criterion
