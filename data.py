@@ -13,9 +13,11 @@ import torch.nn.functional as F
 from tqdm.notebook import tqdm
 from typing import Optional
 from functools import partial
-
-import torch
+from typing import Optional
+from functools import partial
 from torch.nn.modules.loss import _Loss
+from segmentation_models_pytorch.losses._functional import focal_loss_with_logits
+from segmentation_models_pytorch.losses.constants import BINARY_MODE, MULTICLASS_MODE, MULTILABEL_MODE
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 N_CLASSES = 7
@@ -167,6 +169,7 @@ def RDS(mask):
                 ok = mask == i
                 R += ok.count_nonzero().item()*i.item()/mask.count_nonzero().item()
         return R*Freq
+
 def iter_mask(mode,trsh=0.1):
     IMG,MASK=getpaths(mode)
     files=os.listdir(MASK)
@@ -183,7 +186,7 @@ def get_randomimg(mode,n,seed=0):
     img,mask=getpaths(mode)
     x=os.listdir(img)
     #Select n random images from x
-    np.random.seed(seed)
+    #np.random.seed(seed)
     x=np.random.choice(x,n)
     x=pd.DataFrame(x,columns=["id"])
     x['id']=x['id'].str.replace(".npz","")
@@ -337,13 +340,13 @@ def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler
     return history
 
 t_train = A.Compose([A.HorizontalFlip(), A.VerticalFlip(), A.RandomRotate90(), A.Transpose(), 
-                     A.GridDistortion(p=0.2), A.RandomBrightnessContrast((0,0.5),(0,0.5)), A.GaussNoise()])
+                     A.GridDistortion(p=0.2)])#, A.RandomBrightnessContrast((0,0.5),(0,0.5)), A.GaussNoise()])
 
 t_val = A.Compose([A.HorizontalFlip(), A.VerticalFlip(), A.RandomRotate90()])
 
 ENCODER_NAME = 'resnet18'#'timm-regnetx_002'#trial.suggest_categorical('encoder',['resnet50','resnet18','timm-efficientnet-b1'])#'mobilenet_v2'  # 'mobilenet_v2', 'resnet50', 'resnet34'
 ENCODER_WEIGHTS = 'imagenet'  # None, 'imagenet', 'ssl', 'swsl'
-CHANS=3
+CHANS=len(IN_CHANNELS)
 
 def getModel(model, ENCODER_NAME=ENCODER_NAME, ENCODER_WEIGHTS=ENCODER_WEIGHTS, N_CLASSES=N_CLASSES):
     if model == 'unet':
@@ -356,16 +359,6 @@ def getModel(model, ENCODER_NAME=ENCODER_NAME, ENCODER_WEIGHTS=ENCODER_WEIGHTS, 
         return smp.UnetPlusPlus(encoder_name = ENCODER_NAME, encoder_weights = None, in_channels = CHANS, classes = N_CLASSES, activation = None)
     else:
         raise ValueError('model name is not correct')
-
-
-from typing import Optional
-from functools import partial
-
-import torch
-from torch.nn.modules.loss import _Loss
-import segmentation_models_pytorch as smp
-from segmentation_models_pytorch.losses._functional import focal_loss_with_logits
-from segmentation_models_pytorch.losses.constants import BINARY_MODE, MULTICLASS_MODE, MULTILABEL_MODE
 
 class FocalLoss(_Loss):
     def __init__(
