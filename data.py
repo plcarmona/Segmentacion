@@ -316,7 +316,8 @@ def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler
                   "Train Acc:{:.3f}..".format(accuracy/len(train_loader)),
                   "Val Acc:{:.3f}..".format(test_accuracy/len(val_loader)),
                   "Time: {:.2f}m".format((time.time()-since)/60))
-    if val_iou_score/len(val_loader) > 0.5:
+            
+    if val_iou_score/len(val_loader) > 0.4:
         torch.save(model, model_name + 'mIoU-{:.3f}.pt'.format(val_iou_score/len(val_loader)))    
     
     history = {'train_loss' : train_losses, 'val_loss': test_losses,
