@@ -364,8 +364,8 @@ from functools import partial
 import torch
 from torch.nn.modules.loss import _Loss
 import segmentation_models_pytorch as smp
-from smp.losses._functional import focal_loss_with_logits
-from smp.losses.constants import BINARY_MODE, MULTICLASS_MODE, MULTILABEL_MODE
+from segmentation_models_pytorch.losses._functional import focal_loss_with_logits
+from segmentation_models_pytorch.losses.constants import BINARY_MODE, MULTICLASS_MODE, MULTILABEL_MODE
 
 class FocalLoss(_Loss):
     def __init__(
