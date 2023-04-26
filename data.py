@@ -442,8 +442,11 @@ class FocalLoss(_Loss):
                 if self.ignore_index is not None:
                     cls_y_true = cls_y_true[not_ignored]
                     cls_y_pred = cls_y_pred[not_ignored]
+                if cls>=2:
 
-                loss += self.focal_loss_fn(cls_y_pred, cls_y_true)
+                    loss += self.focal_loss_fn(cls_y_pred, cls_y_true)*(cls_y_pred-cls_y_true).abs().mean()
+                else:
+                    loss += self.focal_loss_fn(cls_y_pred, cls_y_true)*0.5
 
         return loss
 
