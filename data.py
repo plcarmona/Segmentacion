@@ -335,23 +335,6 @@ ENCODER_NAME = 'resnet18'#'timm-regnetx_002'#trial.suggest_categorical('encoder'
 ENCODER_WEIGHTS = 'imagenet'  # None, 'imagenet', 'ssl', 'swsl'
 CHANS=3
 
-def getCriterion(CRITERION):
-    if CRITERION == 'CEL':
-        criterion = nn.CrossEntropyLoss(ignore_index=0)
-    elif CRITERION == 'DL':
-        criterion = smp.losses.DiceLoss(mode='multiclass', ignore_index=0)
-    #elif CRITERION == 'CEL+DL':  #definir bien
-    #    criterion = smp.losses.JacardLoss('multiclass')
-    #elif CRITERION == 'JC':
-    #    criterion = smp.losses.JaccardLoss(mode='multiclass')  #RuntimeError: one_hot is only applicable to index tensor.
-    elif CRITERION == 'LV':
-        criterion = smp.losses.LovaszLoss(mode='multiclass', ignore_index=0)
-    elif CRITERION == 'Focal':
-        criterion = smp.losses.FocalLoss(mode='multiclass', ignore_index=0)
-    elif CRITERION == 'Tversky':
-        criterion = smp.losses.TverskyLoss(mode='multiclass',alpha=0.5,beta=0.5, ignore_index=0) 
-    return criterion
-
 def getModel(model, ENCODER_NAME=ENCODER_NAME, ENCODER_WEIGHTS=ENCODER_WEIGHTS, N_CLASSES=N_CLASSES):
     if model == 'unet':
         return smp.Unet(encoder_name = ENCODER_NAME, encoder_weights = ENCODER_WEIGHTS, in_channels = CHANS, classes = N_CLASSES, activation = None)
@@ -488,12 +471,30 @@ class FocalLoss(_Loss):
                 cls_y_true = cls_y_true[not_ignored]
                 cls_y_pred = cls_y_pred[not_ignored]
                 
-            if cls == 1:
+            if cls == 1:           
+                loss += self.focal_loss_fn(cls_y_pred, cls_y_true)/0.8
+            else:
                 aux = cls_y_true != cls_y_pred
                 cls_y_pred = cls_y_pred[aux]
-                cls_y_pred = cls_y_true[aux]
-                loss += self.focal_loss_fn(cls_y_pred, cls_y_true)
-            else:
-                loss += self.focal_loss_fn(cls_y_pred, cls_y_true)
+                cls_y_pred = cls_y_true[aux]                
+                loss += self.focal_loss_fn(cls_y_pred, cls_y_true)*(cls_y_true-cls_y_pred).abs()
 
         return loss
+def getCriterion(CRITERION):
+    if CRITERION == 'CEL':
+        criterion = nn.CrossEntropyLoss(ignore_index=0)
+    elif CRITERION == 'DL':
+        criterion = smp.losses.DiceLoss(mode='multiclass', ignore_index=0)
+    #elif CRITERION == 'CEL+DL':  #definir bien
+    #    criterion = smp.losses.JacardLoss('multiclass')
+    #elif CRITERION == 'JC':
+    #    criterion = smp.losses.JaccardLoss(mode='multiclass')  #RuntimeError: one_hot is only applicable to index tensor.
+    elif CRITERION == 'LV':
+        criterion = smp.losses.LovaszLoss(mode='multiclass', ignore_index=0)
+    elif CRITERION == 'Focal':
+        criterion = smp.losses.FocalLoss(mode='multiclass', ignore_index=0)
+    elif CRITERION == 'Tversky':
+        criterion = smp.losses.TverskyLoss(mode='multiclass',alpha=0.5,beta=0.5, ignore_index=0)
+    elif CRITERION == 'Custom':
+        criterion = FocalLoss(ignore_index=0)
+    return criterion
