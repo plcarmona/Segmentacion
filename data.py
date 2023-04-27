@@ -52,11 +52,12 @@ def create_df(mode):
     
     return pd.DataFrame({'id': name}, index = np.arange(0, len(name)))
 class OperationDataset(Dataset):
-    def __init__(self, img_path, mask_path, X,c=IN_CHANNELS, transform=None):#, mean, std, transform=None):
+    def __init__(self, img_path, mask_path, X,IN_CHANNELS, transform=None):#, mean, std, transform=None):
         self.img_path = img_path
         self.mask_path = mask_path
         self.X = X
         self.transform = transform
+        self.IN_CHANNELS = IN_CHANNELS
         #self.mean = mean
         #self.std = std
         
@@ -64,7 +65,7 @@ class OperationDataset(Dataset):
         return len(self.X)
     
     def __getitem__(self, idx):
-        image = np.load(self.img_path + self.X[idx] + '.npz')['arr_0'][:, :, IN_CHANNELS]
+        image = np.load(self.img_path + self.X[idx] + '.npz')['arr_0'][:, :, self.IN_CHANNELS]
         mask = np.load(self.mask_path + self.X[idx] + '.npz')['arr_0']
         #mask = np.expand_dims(mask, axis = -1)
         #print(image.shape)
