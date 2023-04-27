@@ -79,9 +79,9 @@ class OperationDataset(Dataset):
             #t = T.Compose([T.ToTensor(),T.Normalize(mean,std)])
             #image = t(image).numpy()
             #image = np.moveaxis(image, 0, -1)
-            aug = self.transform(image=image, mask=mask)
-            image = aug['image']
-            mask = aug['mask']
+            #aug = self.transform(image=image, mask=mask)
+            #image = aug['image']
+            #mask = aug['mask']
         
         image = np.transpose(image, (2, 0, 1)).astype(np.float32)  # (c, h, w)
         #image = torch.Tensor(image) / 255.0
