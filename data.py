@@ -21,7 +21,7 @@ from segmentation_models_pytorch.losses.constants import BINARY_MODE, MULTICLASS
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 N_CLASSES = 7
-IN_CHANNELS = [0,1,2,3]
+IN_CHANNELS = [0,1,2]
 ENCODER_NAME = 'resnet18'#'timm-regnetx_002'#trial.suggest_categorical('encoder',['resnet50','resnet18','timm-efficientnet-b1'])#'mobilenet_v2'  # 'mobilenet_v2', 'resnet50', 'resnet34'
 ENCODER_WEIGHTS = 'imagenet'  # None, 'imagenet', 'ssl', 'swsl'
 CHANS=len(IN_CHANNELS)
@@ -52,7 +52,7 @@ def create_df(mode):
     
     return pd.DataFrame({'id': name}, index = np.arange(0, len(name)))
 class OperationDataset(Dataset):
-    def __init__(self, img_path, mask_path, X,IN_CHANNELS, transform=None):#, mean, std, transform=None):
+    def __init__(self, img_path, mask_path, X, IN_CHANNELS, transform=None):#, mean, std, transform=None):
         self.img_path = img_path
         self.mask_path = mask_path
         self.X = X
