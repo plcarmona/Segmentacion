@@ -73,7 +73,7 @@ class OperationDataset(Dataset):
 
 
         
-        if self.transform is not None:
+        #if self.transform is not None:
             #mean=[image[0].mean(),image[1].mean(),image[2].mean()]
             #std=[image[0].std(),image[1].std(),image[2].std()]
             #t = T.Compose([T.ToTensor(),T.Normalize(mean,std)])
