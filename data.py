@@ -240,7 +240,7 @@ def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler
     lrs = []
     min_loss = np.inf
     decrease = 1 ; not_improve=0
-    model_name = str(CHANS)+' '+modelname
+    model_name = modelname
 
     model.to(device)
     fit_time = time.time()
@@ -332,7 +332,7 @@ def fit(epochs, model, train_loader, val_loader, criterion, optimizer, scheduler
                   "Val Acc:{:.3f}..".format(test_accuracy/len(val_loader)),
                   "Time: {:.2f}m".format((time.time()-since)/60))
             
-    if val_iou_score/len(val_loader) > 0.3:
+    if val_iou_score/len(val_loader) > 0.5:
         torch.save(model, model_name + 'mIoU-{:.3f}.pt'.format(val_iou_score/len(val_loader)))    
     
     history = {'train_loss' : train_losses, 'val_loss': test_losses,
