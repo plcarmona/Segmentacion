@@ -52,7 +52,7 @@ def create_df(mode):
     
     return pd.DataFrame({'id': name}, index = np.arange(0, len(name)))
 class OperationDataset(Dataset):
-    def __init__(self, img_path, mask_path, X, transform=None):#, mean, std, transform=None):
+    def __init__(self, img_path, mask_path, X,c=IN_CHANNELS, transform=None):#, mean, std, transform=None):
         self.img_path = img_path
         self.mask_path = mask_path
         self.X = X
